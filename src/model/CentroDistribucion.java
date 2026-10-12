@@ -23,7 +23,7 @@ public class CentroDistribucion {
     private CentroDistribucion() {
         this.registro = new LinkedHashMap<>();
         this.colaLlegada = new LinkedList<>();
-        this.colaPrioridad = new PriorityQueue<>();
+        this.colaPrioridad = new PriorityQueue<>(ComparadoresPaquete.DESPACHO);
         this.porMunicipio = new HashMap<>();
         this.despachados = new HashSet<>();
 
