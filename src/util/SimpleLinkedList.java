@@ -3,7 +3,7 @@ package util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class SimpleLinkedList<T> implements Iterable<T> {
+public class SimpleLinkedList<T> implements Coleccion<T>, Iterable<T> {
     private int size;
     private SimpleNode<T> firstNode;
 
@@ -11,9 +11,6 @@ public class SimpleLinkedList<T> implements Iterable<T> {
         this.firstNode = null;
         this.size = 0;
     }
-
-    public boolean estaVacia() {
-        return firstNode == null;}
 
     public boolean indiceValido(int index) {
         return index >= 0 && index < size;
@@ -139,6 +136,46 @@ public class SimpleLinkedList<T> implements Iterable<T> {
 
     public int getSize() {
         return size;}
+
+    // implementación de de la interface colección
+    @Override
+    public void agregar(T elemento) {
+        addFinal(elemento); // Usamos tu método addFinal existente
+    }
+
+    @Override
+    public boolean eliminar(T elemento) {
+        if (estaVacia()) return false;
+        if (firstNode.getData().equals(elemento)) {
+            deleteFirst();
+            return true;
+        }
+        SimpleNode<T> current = firstNode;
+        while (current.getNext() != null && !current.getNext().getData().equals(elemento)) {
+            current = current.getNext();
+        }
+        if (current.getNext() != null) {
+            current.setNext(current.getNext().getNext());
+            size--;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public T obtener(int posicion) {
+        return getValorNodo(posicion); // Reutilizamos tu método getValorNodo
+    }
+
+    @Override
+    public int tamano() {
+        return size;
+    }
+
+    @Override
+    public boolean estaVacia() {
+        return firstNode == null;
+    }
 
     // IMplementación de iterable E iterator (Requerido por el PDF)
     @Override
