@@ -129,8 +129,8 @@ public class CentroDistribucion {
         System.out.println("Entrega del paquete " + codigo + " registrada correctamente.");
         return true;
     }// hay que liberar al repartidor (volver a disponiblesPorZona)
-    // TODO: validar que el paquete exista y esté despachado
-    // TODO: agregar el paquete al historial
+    //validar que el paquete exista y esté despachado
+    // agregar el paquete al historial
 
     public Repartidor asignarPaquete(Paquete p) {
         if (!registro.containsKey(p.getCodigo())) {
