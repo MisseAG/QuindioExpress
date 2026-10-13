@@ -1,8 +1,7 @@
 package model;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
+import java.text.Normalizer;
+import java.util.*;
 
 public class MunicipiosDisponibles {
 
@@ -14,19 +13,32 @@ public class MunicipiosDisponibles {
                 "Salento", "La Tebaida"));
     }
 
+    /**
+     * Normaliza para comparar:
+     * - trim (espacios extremos)
+     * - colapsa espacios internos
+     * - quita tildes
+     * - minúsculas
+     */
+    private static String normalizar(String texto) {
+        if (texto == null) return null;
+        String sinTildes = Normalizer.normalize(texto, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return sinTildes.trim()
+                .replaceAll("\\s+", " ")
+                .toLowerCase();
+    }
+
     public boolean verificarMunicipio(String municipio) {
-        if (municipio == null) {
-            return false;
-        }
+        if (municipio == null) return false;
+        String buscado = normalizar(municipio);
         for (String m : municipiosSet) {
-            if (m.equalsIgnoreCase(municipio.trim())) {
-                return true;
-            }
+            if (normalizar(m).equals(buscado)) return true;
         }
         return false;
     }
 
     public Set<String> getMunicipiosSet() {
-        return municipiosSet;
+        return Collections.unmodifiableSet(municipiosSet);
     }
 }

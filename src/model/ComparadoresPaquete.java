@@ -21,10 +21,7 @@ public class ComparadoresPaquete {
                     .thenComparing(Paquete::getCodigo);
 
     // criterio de despacho encadenado: prioridad -> tiempo -> código
-    public static final Comparator<Paquete> DESPACHO =
-            Comparator.comparingInt(Paquete::getPrioridad).reversed()
-                    .thenComparingInt(Paquete::getTiempoEstimado)
-                    .thenComparing(Paquete::getCodigo);
+    public static final Comparator<Paquete> DESPACHO = POR_PRIORIDAD;
 
     // Constructor privado para clase utilitaria
     private ComparadoresPaquete() {

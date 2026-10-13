@@ -2,13 +2,16 @@ package util;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class SimpleLinkedList<T> implements Coleccion<T>, Iterable<T> {
     private int size;
     private SimpleNode<T> firstNode;
+    private SimpleNode<T> lastNode;
 
     public SimpleLinkedList() {
         this.firstNode = null;
+        this.lastNode = null;
         this.size = 0;
     }
 
@@ -20,6 +23,9 @@ public class SimpleLinkedList<T> implements Coleccion<T>, Iterable<T> {
         SimpleNode<T> newNode = new SimpleNode<>(data);
         newNode.setNext(firstNode);
         firstNode = newNode;
+        if (lastNode == null) {
+            lastNode = newNode;
+        }
         size++;
     }
 
@@ -28,12 +34,9 @@ public class SimpleLinkedList<T> implements Coleccion<T>, Iterable<T> {
         if (estaVacia()) {
             firstNode = newNode;
         } else {
-            SimpleNode<T> current = firstNode;
-            while (current.getNext() != null) {
-                current = current.getNext();
-            }
-            current.setNext(newNode);
+            lastNode.setNext(newNode); // O(1) operación que no recorre la lista
         }
+        lastNode = newNode;
         size++;
     }
 
@@ -71,7 +74,7 @@ public class SimpleLinkedList<T> implements Coleccion<T>, Iterable<T> {
         SimpleNode<T> current = firstNode;
         int index = 0;
         while (current != null) {
-            if (current.getData().equals(data)) { // Usamos .equals para objetos genéricos
+            if (Objects.equals(current.getData(), data)) { // Usamos .equals para objetos genéricos
                 return index;
             }
             current = current.getNext();
@@ -81,40 +84,32 @@ public class SimpleLinkedList<T> implements Coleccion<T>, Iterable<T> {
     }
 
     public void deleteFirst() {
-        if (!estaVacia()) {
-            firstNode = firstNode.getNext();
-            size--;
+        if (estaVacia())return;
+        firstNode = firstNode.getNext();
+        if (firstNode == null) { // vacía la lista, actualizamos lastNode también
+            lastNode = null;
         }
+        size--;
     }
 
     public void deleteLast() {
         if (estaVacia()) return;
-        if (firstNode.getNext() == null) {
+        if (firstNode == lastNode) { // Solo un nodo en la lista
             firstNode = null;
+            lastNode = null;
         } else {
             SimpleNode<T> current = firstNode;
-            while (current.getNext().getNext() != null) {
+            while (current.getNext() != lastNode) {
                 current = current.getNext();
             }
             current.setNext(null);
+            lastNode = current;
         }
         size--;
     }
 
     public void eliminarPorValor(T data) {
-        if (estaVacia()) return;
-        if (firstNode.getData().equals(data)) {
-            deleteFirst();
-            return;
-        }
-        SimpleNode<T> current = firstNode;
-        while (current.getNext() != null && !current.getNext().getData().equals(data)) {
-            current = current.getNext();
-        }
-        if (current.getNext() != null) {
-            current.setNext(current.getNext().getNext());
-            size--;
-        }
+        eliminar(data);
     }
 
     public void setNodo(int index, T newData) {
@@ -131,6 +126,7 @@ public class SimpleLinkedList<T> implements Coleccion<T>, Iterable<T> {
 
     public void deleteList() {
         firstNode = null;
+        lastNode = null;
         size = 0;
     }
 
@@ -140,31 +136,36 @@ public class SimpleLinkedList<T> implements Coleccion<T>, Iterable<T> {
     // implementación de de la interface colección
     @Override
     public void agregar(T elemento) {
-        addFinal(elemento); // Usamos tu método addFinal existente
+        addFinal(elemento);
     }
 
+    // elimina la primera aparición del elemento en la lista
     @Override
     public boolean eliminar(T elemento) {
         if (estaVacia()) return false;
-        if (firstNode.getData().equals(elemento)) {
+        if (Objects.equals(firstNode.getData(), elemento)) {
             deleteFirst();
             return true;
         }
-        SimpleNode<T> current = firstNode;
-        while (current.getNext() != null && !current.getNext().getData().equals(elemento)) {
-            current = current.getNext();
+        SimpleNode<T> previo = firstNode;
+        while (previo.getNext() != null && !Objects.equals(previo.getNext().getData(), elemento)) {
+            previo = previo.getNext();
         }
-        if (current.getNext() != null) {
-            current.setNext(current.getNext().getNext());
-            size--;
-            return true;
+        if (previo.getNext() == null) {
+            return false;                // elemento inexistente
         }
-        return false;
+        SimpleNode<T> eliminado = previo.getNext();
+        previo.setNext(eliminado.getNext());
+        if (eliminado == lastNode) {     // se eliminó el último
+            lastNode = previo;
+        }
+        size--;
+        return true;
     }
 
     @Override
     public T obtener(int posicion) {
-        return getValorNodo(posicion); // Reutilizamos tu método getValorNodo
+        return getValorNodo(posicion);
     }
 
     @Override
@@ -177,7 +178,7 @@ public class SimpleLinkedList<T> implements Coleccion<T>, Iterable<T> {
         return firstNode == null;
     }
 
-    // IMplementación de iterable E iterator (Requerido por el PDF)
+    // Implementación de iterable E iterator
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
@@ -206,7 +207,7 @@ public class SimpleLinkedList<T> implements Coleccion<T>, Iterable<T> {
             return;
         }
         System.out.print("null <- ");
-        for (T data : this) { // ¡Gracias a Iterable ya puedes usar for-each!
+        for (T data : this) {
             System.out.print("[" + data + "] -> ");
         }
         System.out.println("null");

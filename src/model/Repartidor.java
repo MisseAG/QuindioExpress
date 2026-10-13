@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Repartidor {
 
-    private String identificacion;
-    private String nombre;
-    private String zona;
+    private final String identificacion;
+    private final String nombre;
+    private final String zona;
     private boolean disponible;
 
     public Repartidor(String identificacion, String nombre, String zona, boolean disponible) {
@@ -20,36 +20,25 @@ public class Repartidor {
         return identificacion;
     }
 
-    public void setIdentificacion(String identificacion) {
-        this.identificacion = identificacion;
-    }
-
     public String getNombre() {
         return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
     }
 
     public String getZona() {
         return zona;
     }
 
-    public void setZona(String zona) {
-        this.zona = zona;
-    }
-
     public boolean isDisponible() {
         return disponible;
     }
 
-    public void setDisponible(boolean disponible) {
+    void setDisponible(boolean disponible) {
         this.disponible = disponible;
     }
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Repartidor that = (Repartidor) o;
         return Objects.equals(identificacion, that.identificacion);
@@ -58,5 +47,12 @@ public class Repartidor {
     @Override
     public int hashCode() {
         return Objects.hashCode(identificacion);
+    }
+
+    @Override
+
+    public String toString() {
+        return nombre + " (" + identificacion + ") - Zona: " + zona
+                + "- Disponible: " + (disponible ? "Sí" : "No");
     }
 }

@@ -4,11 +4,11 @@ import java.util.Objects;
 
 public class Paquete implements Comparable<Paquete> {
 
-    private String codigo;
-    private String destino;
-    private double peso;
-    private byte prioridad;
-    private int tiempoEstimado;
+    private final String codigo;
+    private final String destino;
+    private final double peso;
+    private final byte prioridad;
+    private final int tiempoEstimado;
 
     public Paquete(String codigo, String destino, double peso, byte prioridad, int tiempoEstimado) {
         this.codigo = codigo;
@@ -22,40 +22,20 @@ public class Paquete implements Comparable<Paquete> {
         return codigo;
     }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
     public String getDestino() {
         return destino;
-    }
-
-    public void setDestino(String destino) {
-        this.destino = destino;
     }
 
     public double getPeso() {
         return peso;
     }
 
-    public void setPeso(double peso) {
-        this.peso = peso;
-    }
-
     public byte getPrioridad() {
         return prioridad;
     }
 
-    public void setPrioridad(byte prioridad) {
-        this.prioridad = prioridad;
-    }
-
     public int getTiempoEstimado() {
         return tiempoEstimado;
-    }
-
-    public void setTiempoEstimado(int tiempoEstimado) {
-        this.tiempoEstimado = tiempoEstimado;
     }
 
     /**
@@ -69,6 +49,7 @@ public class Paquete implements Comparable<Paquete> {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Paquete paquete = (Paquete) o;
         return Objects.equals(codigo, paquete.codigo);
@@ -77,5 +58,12 @@ public class Paquete implements Comparable<Paquete> {
     @Override
     public int hashCode() {
         return Objects.hashCode(codigo);
+    }
+
+    @Override
+    public String toString() {
+        return codigo + " -> " + destino + " (" +
+                peso + " kg - Prioridad " + prioridad
+                + " - Tiempo estimado: " + tiempoEstimado + " min)";
     }
 }
