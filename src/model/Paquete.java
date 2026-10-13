@@ -64,8 +64,7 @@ public class Paquete implements Comparable<Paquete> {
      */
     @Override
     public int compareTo(Paquete otro) {
-        // TODO: comparar por codigo (String ya es Comparable)
-        return 0;
+        return this.codigo.compareTo(otro.codigo);
     }
 
     @Override
