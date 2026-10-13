@@ -6,11 +6,11 @@ public class Paquete implements Comparable<Paquete> {
 
     private String codigo;
     private String destino;
-    private float peso;
+    private double peso;
     private byte prioridad;
     private int tiempoEstimado;
 
-    public Paquete(String codigo, String destino, float peso, byte prioridad, int tiempoEstimado) {
+    public Paquete(String codigo, String destino, double peso, byte prioridad, int tiempoEstimado) {
         this.codigo = codigo;
         this.destino = destino;
         this.peso = peso;
@@ -38,7 +38,7 @@ public class Paquete implements Comparable<Paquete> {
         return peso;
     }
 
-    public void setPeso(float peso) {
+    public void setPeso(double peso) {
         this.peso = peso;
     }
 

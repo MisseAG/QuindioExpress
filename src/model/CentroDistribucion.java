@@ -56,11 +56,15 @@ public class CentroDistribucion {
         return true;
     }
 
-    public Paquete consultarPaquete(String codigo) {
+    public Paquete consultarPaquete2(String codigo) {
         if(registro.isEmpty() || codigo.isEmpty()){
             System.out.println("La lista de paquetes está vacia. ");
             return null;
         }else{return registro.get(codigo);}
+    }
+
+    public Paquete consultarPaquete(String codigo) {
+        return codigo == null ? null : registro.get(codigo);
     }
 
     public void registrarRepartidor(Repartidor r) {
@@ -72,7 +76,15 @@ public class CentroDistribucion {
             }}
     }
 
-    public Paquete despacharPorLlegada() {
+    private void marcarDespachado(Paquete p) {
+        despachados.add(p.getCodigo());
+        List<Paquete> lista = porMunicipio.get(p.getDestino());
+        if (lista != null) {
+            lista.remove(p);                               // O(k), k = paquetes del municipio
+        }
+    }
+
+    public Paquete despacharPorLlegada2() {
         if(registro.isEmpty() || colaLlegada.isEmpty()){
             System.out.println("Las colecciones están vacias.  ");
             return null;
@@ -91,14 +103,24 @@ public class CentroDistribucion {
         }//extraer de colaLlegada (FIFO) y registrar en despachados
     }
 
-    public Paquete despacharPorPrioridad() {
+    public Paquete despacharPorLlegada() {
+        Paquete p;
+        while ((p = colaLlegada.poll()) != null) {
+            if (!despachados.contains(p.getCodigo())) {   // descarta fantasmas
+                marcarDespachado(p);
+                return p;
+            }
+        }
+        System.out.println("No hay paquetes pendientes.");
+        return null;
+    }
+
+    public Paquete despacharPorPrioridad2() {
         if(registro.isEmpty() || colaPrioridad.isEmpty()){
             System.out.println("Las colecciones están vacias.  ");
             return null;
         }else{
             Paquete paqueteADespachar= colaPrioridad.poll();
-
-
             registro.remove(paqueteADespachar.getCodigo());
             colaPrioridad.remove(paqueteADespachar);
             despachados.add(paqueteADespachar.getCodigo());
@@ -110,7 +132,19 @@ public class CentroDistribucion {
         //extraer de colaPrioridad (según compareTo) y registrar en despachados
     }
 
-    public boolean registrarEntrega(String codigo) {
+    public Paquete despacharPorPrioridad() {
+        Paquete p;
+        while ((p = colaPrioridad.poll()) != null) {
+            if (!despachados.contains(p.getCodigo())) {
+                marcarDespachado(p);
+                return p;
+            }
+        }
+        System.out.println("No hay paquetes pendientes.");
+        return null;
+    }
+
+    public boolean registrarEntrega2(String codigo) {
         if (codigo == null || !despachados.contains(codigo)) {
             System.out.println("El paquete no existe o no ha sido despachado todavía.");
             return false;
@@ -131,6 +165,23 @@ public class CentroDistribucion {
     }// hay que liberar al repartidor (volver a disponiblesPorZona)
     //validar que el paquete exista y esté despachado
     // agregar el paquete al historial
+
+    public boolean registrarEntrega(String codigo) {
+        Paquete p = registro.get(codigo);
+        if (p == null || !despachados.contains(codigo)) {
+            System.out.println("El paquete no existe o no ha sido despachado todavía.");
+            return false;
+        }
+        Repartidor r = paquetesAsignados.remove(codigo);   // si ya se entregó, devuelve null
+        if (r == null) {
+            System.out.println("El paquete no tiene repartidor asignado o ya fue entregado.");
+            return false;
+        }
+        historial.addFinal(p);
+        r.setDisponible(true);
+        disponiblesPorZona.computeIfAbsent(r.getZona(), k -> new LinkedList<>()).add(r);
+        return true;
+    }
 
     public Repartidor asignarPaquete(Paquete p) {
         if (!registro.containsKey(p.getCodigo())) {
